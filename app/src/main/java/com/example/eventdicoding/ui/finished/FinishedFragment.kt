@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.eventdicoding.databinding.FragmentFinishedBinding
+import com.example.eventdicoding.ui.EventAdapter
 
 class FinishedFragment : Fragment() {
 
@@ -15,22 +18,38 @@ class FinishedFragment : Fragment() {
 
     private val binding get() = _binding!!
 
+    private lateinit var eventAdapter: EventAdapter
+    private lateinit var finishedViewModel: FinishedViewModel
+
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val finishedViewModel =
-            ViewModelProvider(this).get(FinishedViewModel::class.java)
+        // Inisialisasi ViewModel
+        finishedViewModel = ViewModelProvider(this)[FinishedViewModel::class.java]
 
+        // Inisialisasi View Binding
         _binding = FragmentFinishedBinding.inflate(inflater, container, false)
-        val root: View = binding.root
 
-        val textView: TextView = binding.textFinished
-        finishedViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+        // Inisialisasi RecyclerView dan Adapter
+        eventAdapter = EventAdapter()
+        binding.rvEvents.apply {
+            layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+            adapter = eventAdapter
         }
-        return root
+
+        // Observasi perubahan data dari ViewModel
+        finishedViewModel.events.observe(viewLifecycleOwner) { eventList ->
+            eventAdapter.submitList(eventList)
+            binding.progressBar.visibility = View.GONE // Sembunyikan ProgressBar saat data telah dimuat
+        }
+
+        // Observasi status loading
+        finishedViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
+
+        return binding.root
     }
 
     override fun onDestroyView() {
