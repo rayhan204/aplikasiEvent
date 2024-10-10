@@ -9,10 +9,10 @@ import com.bumptech.glide.Glide
 import com.example.eventdicoding.data.response.ListEventsItem
 import com.example.eventdicoding.databinding.ItemEventBinding
 
-class EventAdapter : ListAdapter<ListEventsItem, EventAdapter.EventViewHolder>(DIFF_CALLBACK) {
+class EventAdapter(private val onItemClick: (ListEventsItem) -> Unit) : ListAdapter<ListEventsItem, EventAdapter.EventViewHolder>(DIFF_CALLBACK) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val binding = ItemEventBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return EventViewHolder(binding)
+        return EventViewHolder(binding, onItemClick)
     }
 
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
@@ -20,12 +20,19 @@ class EventAdapter : ListAdapter<ListEventsItem, EventAdapter.EventViewHolder>(D
         holder.bind(event)
     }
 
-    class EventViewHolder(private val binding: ItemEventBinding) : RecyclerView.ViewHolder(binding.root) {
+    class EventViewHolder(
+        private val binding: ItemEventBinding,
+        private val onItemClick: (ListEventsItem) -> Unit
+        ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(event: ListEventsItem) {
             binding.tvEventName.text = event.name
             Glide.with(binding.ivEventImage.context)
                 .load(event.imageLogo)
                 .into(binding.ivEventImage)
+
+            binding.root.setOnClickListener{
+                onItemClick(event)
+            }
         }
     }
 

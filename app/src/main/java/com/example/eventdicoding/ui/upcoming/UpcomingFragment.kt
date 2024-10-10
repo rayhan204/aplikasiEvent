@@ -1,5 +1,6 @@
 package com.example.eventdicoding.ui.upcoming
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.eventdicoding.databinding.FragmentUpcomingBinding
+import com.example.eventdicoding.ui.DetailActivity
 import com.example.eventdicoding.ui.EventAdapter
 
 class UpcomingFragment : Fragment() {
@@ -22,26 +24,25 @@ class UpcomingFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inisialisasi ViewModel
         upcomingViewModel = ViewModelProvider(this)[UpcomingViewModel::class.java]
 
-        // Inisialisasi View Binding
         _binding = FragmentUpcomingBinding.inflate(inflater, container, false)
 
-        // Inisialisasi RecyclerView dan Adapter
-        eventAdapter = EventAdapter()
+        eventAdapter = EventAdapter{ selectedEvent ->
+            val intent = Intent(requireContext(), DetailActivity::class.java)
+            intent.putExtra("EVENT_ID", selectedEvent.id)
+            startActivity(intent)
+        }
         binding.rvEvents.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = eventAdapter
         }
 
-        // Observasi perubahan data dari ViewModel
         upcomingViewModel.events.observe(viewLifecycleOwner) { eventList ->
             eventAdapter.submitList(eventList)
-            binding.progressBar.visibility = View.GONE // Sembunyikan ProgressBar saat data telah dimuat
+            binding.progressBar.visibility = View.GONE
         }
 
-        // Observasi status loading
         upcomingViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
