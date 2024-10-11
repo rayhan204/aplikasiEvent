@@ -1,6 +1,7 @@
 package com.example.eventdicoding.ui.finished
 
 import android.content.Intent
+import androidx.appcompat.widget.SearchView
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -47,6 +48,19 @@ class FinishedFragment : Fragment() {
         finishedViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
+
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (!query.isNullOrEmpty()) {
+                    finishedViewModel.searchEvents(query)
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return true
+            }
+        })
 
         return binding.root
     }

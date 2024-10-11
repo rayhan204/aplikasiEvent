@@ -47,6 +47,30 @@ class FinishedViewModel : ViewModel() {
         })
     }
 
+    fun searchEvents(query: String) {
+        _isLoading.value = true
+        val client = ApiConfig.getApiService().getEventSearch(query)
+        client.enqueue(object : Callback<EventResponse> {
+            override fun onResponse(
+                call: Call<EventResponse>,
+                response: Response<EventResponse>
+            ) {
+                _isLoading.value = false
+                if (response.isSuccessful) {
+                    _events.value = response.body()?.listEvents
+                } else {
+                    Log.e(TAG, "onFailure: ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
+                _isLoading.value = false
+                Log.e(TAG, "onFailure: ${t.message.toString()}")
+            }
+        })
+    }
+
+
     companion object {
         private const val TAG = "FinishedViewModel"
     }

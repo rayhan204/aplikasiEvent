@@ -3,13 +3,7 @@
     <string name="title_home">Home</string>
     <string name="title_upcoming">Upcoming</string>
     <string name="title_finished">Finished</string>
-    <string name="name_event">Title</string>
-    <string name="owner_event">Owner</string>
-    <string name="time_event">Waktu acara</string>
-    <string name="quota_event">Sisa kuota</string>
-    <string name="description_event">Deskripsi acara</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="searchbar_hint">Cari</string>
     <string name="open_link">Register</string>
     <string name="upcoming_events">Upcoming Events</string>
     <string name="finished_events">Finished Events</string>

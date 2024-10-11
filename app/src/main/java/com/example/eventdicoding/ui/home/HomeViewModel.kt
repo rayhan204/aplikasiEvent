@@ -39,7 +39,7 @@ class HomeViewModel : ViewModel() {
             ) {
                 _isLoading.value = false
                 if (response.isSuccessful) {
-                    _finishedEvents.value = response.body()?.listEvents
+                    _upcomingEvents.value = response.body()?.listEvents
                 } else {
                     Log.e(TAG, "onFailure: ${response.message()}")
                 }

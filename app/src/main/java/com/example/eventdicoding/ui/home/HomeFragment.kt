@@ -1,5 +1,6 @@
 package com.example.eventdicoding.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,8 +8,10 @@ import android.view.ViewGroup
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.eventdicoding.databinding.FragmentHomeBinding
+import com.example.eventdicoding.ui.DetailActivity
 import com.example.eventdicoding.ui.EventAdapter
 
 class HomeFragment : Fragment() {
@@ -29,9 +32,15 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         eventAdapterUpcoming = EventAdapter { selectedEvent ->
+            val intent = Intent(requireContext(), DetailActivity::class.java)
+            intent.putExtra("EVENT_ID", selectedEvent.id)
+            startActivity(intent)
         }
 
         eventAdapterFinished = EventAdapter { selectedEvent ->
+            val intent = Intent(requireContext(), DetailActivity::class.java)
+            intent.putExtra("EVENT_ID", selectedEvent.id)
+            startActivity(intent)
         }
 
         binding.rvUpcomingEvents.apply {
@@ -40,16 +49,16 @@ class HomeFragment : Fragment() {
         }
 
         binding.rvFinishedEvents.apply {
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            layoutManager = LinearLayoutManager(context, GridLayoutManager.VERTICAL, false)
             adapter = eventAdapterFinished
         }
 
         homeViewModel.upcomingEvents.observe(viewLifecycleOwner) { eventList ->
-            eventAdapterUpcoming.submitList(eventList.take(5)) // Display max 5 events
+            eventAdapterUpcoming.submitList(eventList.take(5))
         }
 
         homeViewModel.finishedEvents.observe(viewLifecycleOwner) { eventList ->
-            eventAdapterFinished.submitList(eventList.take(5)) // Display max 5 events
+            eventAdapterFinished.submitList(eventList.take(5))
         }
 
         homeViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
