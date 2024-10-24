@@ -5,6 +5,16 @@
     <string name="title_finished">Finished</string>
     <string name="searchbar_hint">Cari</string>
     <string name="open_link">Register</string>
+    <string name="remaining_quota">Sisa Kuota: %1$d</string>
     <string name="upcoming_events">Upcoming Events</string>
     <string name="finished_events">Finished Events</string>
+    <string name="add_favorite">tambah ke favorite</string>
+    <string name="settings">Settings</string>
+    <string name="dark_mode">Mode Malam</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="favorite">Favorite</string>
+    <string name="no_event_favorite">Tidak ada acara favorit</string>
+    <string name="save_favorite">simpan favorite</string>
+    <string name="tv_no_event_detail">tidak ada event detail</string>
 </resources>

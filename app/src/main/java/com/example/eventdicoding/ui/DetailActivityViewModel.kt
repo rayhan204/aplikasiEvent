@@ -1,52 +1,55 @@
 package com.example.eventdicoding.ui
 
-import android.util.Log
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.eventdicoding.data.response.Event
-import com.example.eventdicoding.data.response.EventDetailResponse
-import com.example.eventdicoding.data.retrofit.ApiConfig
-import retrofit2.Response
-import retrofit2.Call
-import retrofit2.Callback
-class DetailActivityViewModel : ViewModel() {
-    private val _event = MutableLiveData<Event>()
-    val event: LiveData<Event> = _event
+import androidx.lifecycle.viewModelScope
+import com.example.eventdicoding.data.EventRepository
+import com.example.eventdicoding.data.local.entity.EventEntity
+import com.example.eventdicoding.data.Result
+import kotlinx.coroutines.launch
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
+class DetailActivityViewModel(private val repository: EventRepository) : ViewModel() {
+    private val _event = MutableLiveData<Result<EventEntity>>()
+    val event: LiveData<Result<EventEntity>> = _event
 
-    fun loadEventDetail(eventId: Int) {
-        _isLoading.value = true
-        val client = ApiConfig.getApiService().getDetailEvent(eventId.toString())
+   private val _isFavorite = MutableLiveData<Boolean>()
+    val isFavorite: LiveData<Boolean> = _isFavorite
 
-        client.enqueue(object : Callback<EventDetailResponse> {
-            override fun onResponse(
-                call: Call<EventDetailResponse>,
-                response: Response<EventDetailResponse>
-            ) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    // Make sure the response body is not null
-                    response.body()?.let { eventDetailResponse ->
-                        _event.value = eventDetailResponse.event
-                    } ?: run {
-                        Log.e(TAG, "Response body is null")
-                    }
-                } else {
-                    Log.e(TAG, "onFailure: ${response.message()}")
+
+    fun getDetailId(eventId: Int) {
+        viewModelScope.launch {
+            repository.getDetailId(eventId).observeForever { result ->
+                _event.value = result
+                if (result is Result.Success) {
+                    checkStatusFavorite(result.data.id)
                 }
             }
+        }
+    }
 
-            override fun onFailure(call: Call<EventDetailResponse>, t: Throwable) {
-                _isLoading.value = false
-                Log.e(TAG, "onFailure: ${t.message.toString()}")
+    private fun checkStatusFavorite(eventId: String) {
+        viewModelScope.launch {
+            repository.isEventFavorite(eventId).collect { isFavorite ->
+                _isFavorite.value = isFavorite
             }
-        })
+        }
     }
 
-    companion object {
-        private const val TAG = "DetailActivityViewModel"
+    fun buttonFavorite(event: EventEntity, context: Context) {
+        viewModelScope.launch {
+            val nowFavoriteStatus = _isFavorite.value ?: false
+            if (nowFavoriteStatus) {
+                repository.removeFavorite(event.id)
+                Toast.makeText(context, "Dihapus dari favorite", Toast.LENGTH_SHORT).show()
+            } else {
+                repository.addFavorite(event.id)
+                Toast.makeText(context, "Ditambah ke Favorite", Toast.LENGTH_SHORT).show()
+            }
+            _isFavorite.value = !nowFavoriteStatus
+        }
     }
+
 }

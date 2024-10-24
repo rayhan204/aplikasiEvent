@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.eventdicoding.data.response.EventResponse
-import com.example.eventdicoding.data.response.ListEventsItem
-import com.example.eventdicoding.data.retrofit.ApiConfig
+import com.example.eventdicoding.data.remote.response.EventResponse
+import com.example.eventdicoding.data.remote.response.ListEventsItem
+import com.example.eventdicoding.data.remote.retrofit.ApiConfig
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
