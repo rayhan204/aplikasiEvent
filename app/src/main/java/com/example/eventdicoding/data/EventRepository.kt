@@ -1,5 +1,7 @@
 package com.example.eventdicoding.data
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
@@ -88,10 +90,12 @@ class EventRepository private constructor(
         emit(Result.Loading)
         try {
             val localEvents = eventDao.getEventsFinished()
+            Log.d(TAG, "Local Fnished Events: $localEvents")
             if (localEvents.isNotEmpty()) {
                 emit(Result.Success(localEvents))
             }
-            val response = apiService.getFinishedEvent().await() // Ganti dengan endpoint yang sesuai
+            val response = apiService.getFinishedEvent().await()
+            Log.d(TAG, "Api Finished: ${response.listEvents}")
             val events = response.listEvents.map { eventDto ->
                 EventEntity(
                     id = eventDto.id.toString(),

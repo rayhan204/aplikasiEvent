@@ -65,7 +65,8 @@ class FinishedFragment : Fragment() {
                 is Result.Loading -> {
                     showLoading(true)
                 }
-            }            }
+            }
+        }
     }
 
     private fun showLoading (isLoading: Boolean) {
