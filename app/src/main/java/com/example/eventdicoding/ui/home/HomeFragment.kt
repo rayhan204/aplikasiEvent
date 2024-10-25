@@ -5,14 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.text.HtmlCompat
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.eventdicoding.databinding.FragmentHomeBinding
 import com.example.eventdicoding.ui.DetailActivity
 import com.example.eventdicoding.ui.EventAdapter
+import com.example.eventdicoding.data.Result
+import com.example.eventdicoding.ui.favorite.ViewModelFactory
 
 class HomeFragment : Fragment() {
 
@@ -21,26 +22,30 @@ class HomeFragment : Fragment() {
 
     private lateinit var eventAdapterUpcoming: EventAdapter
     private lateinit var eventAdapterFinished: EventAdapter
-    private lateinit var homeViewModel: HomeViewModel
+    private val homeViewModel: HomeViewModel by viewModels {
+        ViewModelFactory.getInstance(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
+        setupRecyclerView()
+        observeViewModel()
+        return binding.root
+    }
+
+    private fun setupRecyclerView() {
         eventAdapterUpcoming = EventAdapter { selectedEvent ->
-            val intent = Intent(requireContext(), DetailActivity::class.java)
-            intent.putExtra("EVENT_ID", selectedEvent.id)
-            startActivity(intent)
+            navigateToDetail(selectedEvent.id)
         }
 
         eventAdapterFinished = EventAdapter { selectedEvent ->
-            val intent = Intent(requireContext(), DetailActivity::class.java)
-            intent.putExtra("EVENT_ID", selectedEvent.id)
-            startActivity(intent)
+            navigateToDetail(selectedEvent.id)
         }
 
         binding.rvUpcomingEvents.apply {
@@ -49,27 +54,53 @@ class HomeFragment : Fragment() {
         }
 
         binding.rvFinishedEvents.apply {
-            layoutManager = LinearLayoutManager(context, GridLayoutManager.VERTICAL, false)
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = eventAdapterFinished
         }
+    }
 
-        homeViewModel.upcomingEvents.observe(viewLifecycleOwner) { eventList ->
-            eventAdapterUpcoming.submitList(eventList.take(5))
-        }
-
-        homeViewModel.finishedEvents.observe(viewLifecycleOwner) { eventList ->
-            eventAdapterFinished.submitList(eventList.take(5))
-        }
-
-        homeViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            if (isLoading) {
-                binding.progressBar.visibility = View.VISIBLE
-            } else {
-                binding.progressBar.visibility = View.GONE
+    private fun observeViewModel() {
+        homeViewModel.eventUpcoming.observe(viewLifecycleOwner) { eventList ->
+            when (eventList) {
+                is Result.Success -> {
+                    eventAdapterUpcoming.submitList(eventList.data.toMutableList())
+                    showLoading(false)
+                }
+                is Result.Error -> {
+                    showLoading(false)
+                    Toast.makeText(context, "Error fetching upcoming events", Toast.LENGTH_SHORT).show()
+                }
+                is Result.Loading -> {
+                    showLoading(true)
+                }
             }
         }
 
-        return binding.root
+        homeViewModel.eventFinished.observe(viewLifecycleOwner) { eventList ->
+            when (eventList) {
+                is Result.Success -> {
+                    eventAdapterFinished.submitList(eventList.data.toMutableList())
+                    showLoading(false)
+                }
+                is Result.Error -> {
+                    showLoading(false)
+                    Toast.makeText(context, "Error fetching upcoming events", Toast.LENGTH_SHORT).show()
+                }
+                is Result.Loading -> {
+                    showLoading(true)
+                }
+            }
+        }
+    }
+
+    private fun navigateToDetail(eventId: String) {
+        val intent = Intent(requireContext(), DetailActivity::class.java)
+        intent.putExtra("EVENT_ID", eventId)
+        startActivity(intent)
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     override fun onDestroyView() {

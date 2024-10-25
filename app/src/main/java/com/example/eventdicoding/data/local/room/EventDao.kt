@@ -26,4 +26,10 @@ interface EventDao {
     @Query("SELECT EXISTS(SELECT * FROM favoriteTable WHERE id = :eventId)")
     fun isEventFavorite(eventId: String): Flow<Boolean>
 
+    @Query("SELECT * FROM eventsTable WHERE isActive = 1 ORDER BY date(beginTime) DESC")
+    suspend fun getEventsUpcoming(): List<EventEntity>
+
+    @Query("SELECT * FROM eventsTable WHERE isActive = 0 ORDER BY date(beginTime) DESC")
+    suspend fun getEventsFinished(): List<EventEntity>
+
 }

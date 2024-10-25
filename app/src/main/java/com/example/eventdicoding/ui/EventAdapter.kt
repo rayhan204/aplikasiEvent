@@ -6,10 +6,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.eventdicoding.data.local.entity.EventEntity
 import com.example.eventdicoding.data.remote.response.ListEventsItem
 import com.example.eventdicoding.databinding.ItemEventBinding
 
-class EventAdapter(private val onItemClick: (ListEventsItem) -> Unit) : ListAdapter<ListEventsItem, EventAdapter.EventViewHolder>(DIFF_CALLBACK) {
+class EventAdapter(private val onItemClick: (EventEntity) -> Unit) : ListAdapter<EventEntity, EventAdapter.EventViewHolder>(DIFF_CALLBACK) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val binding = ItemEventBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return EventViewHolder(binding, onItemClick)
@@ -20,11 +21,15 @@ class EventAdapter(private val onItemClick: (ListEventsItem) -> Unit) : ListAdap
         holder.bind(event)
     }
 
+    override fun submitList(list: MutableList<EventEntity>?) {
+        super.submitList(list)
+    }
+
     class EventViewHolder(
         private val binding: ItemEventBinding,
-        private val onItemClick: (ListEventsItem) -> Unit
+        private val onItemClick: (EventEntity) -> Unit
         ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(event: ListEventsItem) {
+        fun bind(event: EventEntity) {
             binding.tvEventName.text = event.name
             Glide.with(binding.ivEventImage.context)
                 .load(event.imageLogo)
@@ -37,12 +42,12 @@ class EventAdapter(private val onItemClick: (ListEventsItem) -> Unit) : ListAdap
     }
 
     companion object {
-        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ListEventsItem>() {
-            override fun areItemsTheSame(oldItem: ListEventsItem, newItem: ListEventsItem): Boolean {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<EventEntity>() {
+            override fun areItemsTheSame(oldItem: EventEntity, newItem: EventEntity): Boolean {
                 return oldItem.id == newItem.id
             }
 
-            override fun areContentsTheSame(oldItem: ListEventsItem, newItem: ListEventsItem): Boolean {
+            override fun areContentsTheSame(oldItem: EventEntity, newItem: EventEntity): Boolean {
                 return oldItem == newItem
             }
         }

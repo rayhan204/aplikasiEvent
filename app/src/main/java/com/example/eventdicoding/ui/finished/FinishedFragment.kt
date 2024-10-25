@@ -1,17 +1,19 @@
 package com.example.eventdicoding.ui.finished
 
 import android.content.Intent
-import androidx.appcompat.widget.SearchView
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.example.eventdicoding.data.Result
 import com.example.eventdicoding.databinding.FragmentFinishedBinding
 import com.example.eventdicoding.ui.DetailActivity
 import com.example.eventdicoding.ui.EventAdapter
+import com.example.eventdicoding.ui.favorite.ViewModelFactory
 
 class FinishedFragment : Fragment() {
 
@@ -20,49 +22,54 @@ class FinishedFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var eventAdapter: EventAdapter
-    private lateinit var finishedViewModel: FinishedViewModel
 
+    private val finishedViewModel: FinishedViewModel by viewModels {
+        ViewModelFactory.getInstance(requireContext())
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        finishedViewModel = ViewModelProvider(this)[FinishedViewModel::class.java]
 
         _binding = FragmentFinishedBinding.inflate(inflater, container, false)
 
-        eventAdapter = EventAdapter { selectedEvent ->
+        setupRecyclerView()
+        observeViewModel()
+        return binding.root
+    }
+
+    private fun setupRecyclerView() {
+        eventAdapter = EventAdapter {  selectedEvent ->
             val intent = Intent(requireContext(), DetailActivity::class.java)
             intent.putExtra("EVENT_ID", selectedEvent.id)
             startActivity(intent)
         }
+
         binding.rvEvents.apply {
             layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             adapter = eventAdapter
         }
+    }
 
-        finishedViewModel.events.observe(viewLifecycleOwner) { eventList ->
-            eventAdapter.submitList(eventList)
-            binding.progressBar.visibility = View.GONE
-        }
-
-        finishedViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-        }
-
-        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                if (!query.isNullOrEmpty()) {
-                    finishedViewModel.searchEvents(query)
+    private  fun observeViewModel() {
+        finishedViewModel.events.observe(viewLifecycleOwner) {eventList ->
+            when (eventList) {
+                is Result.Success -> {
+                    showLoading(false)
+                    eventAdapter.submitList(eventList.data.toMutableList())
                 }
-                return true
-            }
+                is Result.Error -> {
+                    showLoading(false)
+                    Toast.makeText(context, "Error !!", Toast.LENGTH_SHORT).show()
+                }
+                is Result.Loading -> {
+                    showLoading(true)
+                }
+            }            }
+    }
 
-            override fun onQueryTextChange(newText: String?): Boolean {
-                return true
-            }
-        })
-
-        return binding.root
+    private fun showLoading (isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     override fun onDestroyView() {

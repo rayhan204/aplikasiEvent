@@ -5,12 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.eventdicoding.data.Result
 import com.example.eventdicoding.databinding.FragmentUpcomingBinding
 import com.example.eventdicoding.ui.DetailActivity
 import com.example.eventdicoding.ui.EventAdapter
+import com.example.eventdicoding.ui.favorite.ViewModelFactory
 
 class UpcomingFragment : Fragment() {
 
@@ -18,36 +21,53 @@ class UpcomingFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var eventAdapter: EventAdapter
-    private lateinit var upcomingViewModel: UpcomingViewModel
-
+    private val upcomingViewModel: UpcomingViewModel by viewModels {
+        ViewModelFactory.getInstance(requireContext())
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        upcomingViewModel = ViewModelProvider(this)[UpcomingViewModel::class.java]
 
         _binding = FragmentUpcomingBinding.inflate(inflater, container, false)
 
-        eventAdapter = EventAdapter{ selectedEvent ->
+        setupRecyclerView()
+        observeViewModel()
+        return binding.root
+    }
+
+    private fun setupRecyclerView() {
+        eventAdapter = EventAdapter {  selectedEvent ->
             val intent = Intent(requireContext(), DetailActivity::class.java)
             intent.putExtra("EVENT_ID", selectedEvent.id)
             startActivity(intent)
         }
+
         binding.rvEvents.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = eventAdapter
         }
+    }
 
-        upcomingViewModel.events.observe(viewLifecycleOwner) { eventList ->
-            eventAdapter.submitList(eventList)
-            binding.progressBar.visibility = View.GONE
-        }
+    private  fun observeViewModel() {
+        upcomingViewModel.events.observe(viewLifecycleOwner) {eventList ->
+            when (eventList) {
+                is Result.Success -> {
+                    showLoading(false)
+                    eventAdapter.submitList(eventList.data.toMutableList())
+                }
+                is Result.Error -> {
+                    showLoading(false)
+                    Toast.makeText(context, "Error !!", Toast.LENGTH_SHORT).show()
+                }
+                is Result.Loading -> {
+                    showLoading(true)
+                }
+            }            }
+    }
 
-        upcomingViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-        }
-
-        return binding.root
+    private fun showLoading (isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     override fun onDestroyView() {

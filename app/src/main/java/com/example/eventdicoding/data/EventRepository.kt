@@ -52,6 +52,10 @@ class EventRepository private constructor(
     fun getEventsUpcoming(): LiveData<Result<List<EventEntity>>> = liveData(Dispatchers.IO) {
         emit(Result.Loading)
         try {
+            val localEvents = eventDao.getEventsUpcoming()
+            if (localEvents.isNotEmpty()) {
+                emit(Result.Success(localEvents))
+            }
             val response = apiService.getUpcomingEvent().await()
             val events = response.listEvents.map{ eventDto ->
                 EventEntity(
@@ -68,7 +72,8 @@ class EventRepository private constructor(
                     quota = eventDto.quota,
                     beginTime = eventDto.beginTime,
                     endTime = eventDto.endTime,
-                    category = eventDto.category
+                    category = eventDto.category,
+                    isActive = true
                 )
             }
 
@@ -82,6 +87,10 @@ class EventRepository private constructor(
     fun getFinishedEvents(): LiveData<Result<List<EventEntity>>> = liveData(Dispatchers.IO) {
         emit(Result.Loading)
         try {
+            val localEvents = eventDao.getEventsFinished()
+            if (localEvents.isNotEmpty()) {
+                emit(Result.Success(localEvents))
+            }
             val response = apiService.getFinishedEvent().await() // Ganti dengan endpoint yang sesuai
             val events = response.listEvents.map { eventDto ->
                 EventEntity(
@@ -98,7 +107,8 @@ class EventRepository private constructor(
                     quota = eventDto.quota,
                     beginTime = eventDto.beginTime,
                     endTime = eventDto.endTime,
-                    category = eventDto.category
+                    category = eventDto.category,
+                    isActive = false
                 )
             }
 
@@ -107,6 +117,7 @@ class EventRepository private constructor(
         } catch (e: Exception) {
             emit(Result.Error(e.message ?: "Failed to fetch finished events"))
         }
+
     }
 
     companion object {

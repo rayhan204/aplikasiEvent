@@ -49,4 +49,7 @@ data class EventEntity(
 
     @field:ColumnInfo(name = "category")
     val category: String? = null,
+
+    @field:ColumnInfo(name = "isActive")
+    val isActive: Boolean
 )
