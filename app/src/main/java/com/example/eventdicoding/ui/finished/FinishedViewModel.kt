@@ -11,7 +11,4 @@ class FinishedViewModel(eventRepository: EventRepository) : ViewModel() {
 
     val events: LiveData<Result<List<EventEntity>>> = eventRepository.getFinishedEvents()
 
-    companion object {
-        private const val TAG = "FinishedViewModel"
-    }
 }

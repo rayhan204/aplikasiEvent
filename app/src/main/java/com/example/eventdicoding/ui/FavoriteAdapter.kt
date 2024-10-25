@@ -1,6 +1,5 @@
 package com.example.eventdicoding.ui
 
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -9,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.eventdicoding.data.local.entity.EventEntity
 import com.example.eventdicoding.databinding.ItemEventBinding
-import com.example.eventdicoding.ui.EventAdapter.Companion.DIFF_CALLBACK
 
 class FavoriteAdapter(private val onFavoriteClick: (EventEntity) -> Unit): ListAdapter<EventEntity, FavoriteAdapter.MyViewHolder>(
     DIFF_CALLBACK){

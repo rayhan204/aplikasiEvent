@@ -2,25 +2,17 @@ package com.example.eventdicoding.ui.favorite
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Message
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.example.eventdicoding.data.Result
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.eventdicoding.data.local.entity.EventEntity
-import com.google.android.material.snackbar.Snackbar
 import com.example.eventdicoding.databinding.FragmentFavoriteBinding
 import com.example.eventdicoding.ui.DetailActivity
 import com.example.eventdicoding.ui.FavoriteAdapter
-import kotlinx.coroutines.launch
 
 class FavoriteFragment : Fragment() {
 
@@ -63,7 +55,7 @@ class FavoriteFragment : Fragment() {
     }
 
     private fun observeFavoriteEvents() {
-        viewModel.favoriteEvents.observe(viewLifecycleOwner, Observer { result ->
+        viewModel.favoriteEvents.observe(viewLifecycleOwner ){ result ->
             when (result) {
                 is Result.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
@@ -83,17 +75,9 @@ class FavoriteFragment : Fragment() {
                 }
 
             }
-        })
+        }
     }
 
-    private fun showLoading(isLoading: Boolean) {
-        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-        binding.rvFavorite.visibility = if (isLoading) View.GONE else View.VISIBLE
-    }
-
-    private fun showSnackbar(message: String) {
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
-    }
 
     override fun onDestroy() {
         super.onDestroy()

@@ -12,13 +12,13 @@ data class EventEntity(
     val id: String,
 
     @field:ColumnInfo(name = "name")
-    val name: String? = null,
+    val name: String,
 
     @field:ColumnInfo(name = "summary")
     val summary: String? = null,
 
     @field:ColumnInfo(name = "mediaCover")
-    val mediaCover: String? = null,
+    val mediaCover: String,
 
     @field:ColumnInfo(name = "registrants")
     val registrants: Int? = null,

@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.eventdicoding.data.local.entity.EventEntity
-import com.example.eventdicoding.data.remote.response.ListEventsItem
 import com.example.eventdicoding.databinding.ItemEventBinding
 
 class EventAdapter(private val onItemClick: (EventEntity) -> Unit) : ListAdapter<EventEntity, EventAdapter.EventViewHolder>(DIFF_CALLBACK) {

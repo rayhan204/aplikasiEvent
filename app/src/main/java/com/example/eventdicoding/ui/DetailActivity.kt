@@ -44,6 +44,7 @@ class DetailActivity : AppCompatActivity() {
                 is Result.Loading -> showLoading(true)
                 is Result.Success -> {
                     showLoading(false)
+                    noDetail(false)
                     eventDetail(result.data)
                 }
                 is Result.Error -> {

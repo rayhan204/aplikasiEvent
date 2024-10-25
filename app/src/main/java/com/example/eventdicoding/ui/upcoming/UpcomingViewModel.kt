@@ -11,7 +11,4 @@ class UpcomingViewModel(eventRepository: EventRepository) : ViewModel() {
 
     val events: LiveData<Result<List<EventEntity>>> = eventRepository.getEventsUpcoming()
 
-    companion object {
-        private const val TAG = "UpcomingViewModel"
-    }
 }

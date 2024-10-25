@@ -33,8 +33,12 @@ class EventRepository private constructor(
         return  eventDao.isEventFavorite(eventId)
     }
 
-    suspend fun addFavorite(favoriteId: String) {
-        val favorite = FavoriteEntity(favoriteId)
+    suspend fun addFavorite(favorites: EventEntity) {
+        val favorite = FavoriteEntity(
+            id = favorites.id,
+            name = favorites.name,
+            mediaCover = favorites.mediaCover
+        )
         eventDao.insertFavorite(favorite)
     }
 

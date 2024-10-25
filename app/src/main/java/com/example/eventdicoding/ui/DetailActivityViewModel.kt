@@ -45,7 +45,7 @@ class DetailActivityViewModel(private val repository: EventRepository) : ViewMod
                 repository.removeFavorite(event.id)
                 Toast.makeText(context, "Dihapus dari favorite", Toast.LENGTH_SHORT).show()
             } else {
-                repository.addFavorite(event.id)
+                repository.addFavorite(event)
                 Toast.makeText(context, "Ditambah ke Favorite", Toast.LENGTH_SHORT).show()
             }
             _isFavorite.value = !nowFavoriteStatus

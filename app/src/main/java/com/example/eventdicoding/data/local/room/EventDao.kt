@@ -21,7 +21,7 @@ interface EventDao {
     suspend fun deleteFavorite(favorite: FavoriteEntity): Int
 
     @Query("SELECT * FROM eventsTable WHERE id = :eventId LIMIT 1")
-    suspend fun getEventId(eventId: kotlin.Int): EventEntity
+    suspend fun getEventId(eventId: Int): EventEntity
 
     @Query("SELECT EXISTS(SELECT * FROM favoriteTable WHERE id = :eventId)")
     fun isEventFavorite(eventId: String): Flow<Boolean>

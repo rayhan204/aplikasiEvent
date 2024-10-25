@@ -12,6 +12,10 @@ data class FavoriteEntity (
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "id")
     var id: String = "",
+
+    @ColumnInfo(name = "name")
     var name: String ="",
+
+    @ColumnInfo(name = "mediaCover")
     var mediaCover: String = ""
 ): Parcelable
