@@ -23,10 +23,11 @@
         tools:layout="@layout/fragment_finished" />
 
     <fragment
-        android:id="@+id/settings"
-        android:name="com.example.eventdicoding.ui.settings.SettingsFragment"
+        android:id="@+id/navigation_setting"
+        android:name="com.example.eventdicoding.ui.settings.SettingFragment"
         android:label="@string/settings"
-        tools:layout="@layout/fragment_settings"/>
+        tools:layout="@layout/fragment_setting"/>
+
 
     <fragment
         android:id="@+id/navigation_favorite"

@@ -31,8 +31,8 @@ class DetailActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        val eventId = intent.getIntExtra("EVENT_ID",0) ?: return showErrorAndFinish()
-        viewModel.getDetailId(eventId)
+        val eventId = intent.getStringExtra("EVENT_ID")
+        viewModel.getDetailId(eventId?.toInt() ?: 0)
 
         observeViewModel()
 
@@ -82,11 +82,6 @@ class DetailActivity : AppCompatActivity() {
             viewModel.buttonFavorite(event, this@DetailActivity)
         }
 
-    }
-
-    private fun showErrorAndFinish() {
-        Toast.makeText(this, "Event ID Tidak ditemukan", Toast.LENGTH_SHORT).show()
-        finish()
     }
 
     private fun updateFavoriteIcon(isFavorite: Boolean) {

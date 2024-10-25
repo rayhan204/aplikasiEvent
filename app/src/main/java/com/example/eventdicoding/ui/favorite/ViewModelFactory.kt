@@ -8,11 +8,14 @@ import com.example.eventdicoding.di.Injection
 import com.example.eventdicoding.ui.DetailActivityViewModel
 import com.example.eventdicoding.ui.finished.FinishedViewModel
 import com.example.eventdicoding.ui.home.HomeViewModel
+import com.example.eventdicoding.ui.settings.SettingPreferences
 import com.example.eventdicoding.ui.settings.SettingViewModel
 import com.example.eventdicoding.ui.upcoming.UpcomingViewModel
 
-class ViewModelFactory private constructor(private val eventRepository: EventRepository):
-ViewModelProvider.NewInstanceFactory(){
+class ViewModelFactory private constructor(
+    private val eventRepository: EventRepository,
+    private val pref: SettingPreferences
+): ViewModelProvider.NewInstanceFactory(){
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -26,6 +29,8 @@ ViewModelProvider.NewInstanceFactory(){
             return FinishedViewModel(eventRepository) as T
         } else if (modelClass.isAssignableFrom(FavoriteViewModel::class.java)) {
             return FavoriteViewModel(eventRepository) as T
+        } else if (modelClass.isAssignableFrom(SettingViewModel::class.java)) {
+            return SettingViewModel(pref) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
     }
@@ -36,7 +41,10 @@ ViewModelProvider.NewInstanceFactory(){
 
         fun getInstance(context: Context): ViewModelFactory =
             instance ?: synchronized(this) {
-                instance ?: ViewModelFactory(Injection.provideRepository(context))
+                instance ?: ViewModelFactory(
+                    Injection.provideRepository(context),
+                    Injection.provideSettingPreferences(context)
+                )
             }
     }
 
